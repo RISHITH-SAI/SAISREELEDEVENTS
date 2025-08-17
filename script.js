@@ -931,7 +931,7 @@ function renderEventPage(slug) {
     document.body.style.backgroundColor = event.bg || appSettings.theme.globalBackground;
 
     // Determine video player dimensions
-    const videoWidth = event.video?.width || '100%';
+    const videoWidth = event.video?.width || '80%';
     const videoHeight = event.video?.height || 'auto'; // 'auto' for responsive height if width is 100%
 
     // Populate the main content area with event details
@@ -958,7 +958,7 @@ function renderEventPage(slug) {
                         // Ensure the URL is always the /embed/ format
                         ? `<iframe width="${videoWidth}" height="${videoHeight}" class="absolute top-0 left-0 w-full h-full" src="${event.video.url.replace('watch?v=', 'embed/') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}?autoplay=1&mute=1&rel=0&playsinline=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
                         // Generic video tag for other video types (MP4, HLS, etc.)
-                        : `<video width="${videoWidth}" height="${videoHeight}" class="absolute top-0 left-0 w-full h-full object-${event.video.fit || 'contain'}" controls autoplay muted playsinline>
+                      : `<video width="${videoWidth}" height="${videoHeight}" class="absolute top-0 left-0 w-full h-full object-${event.video.fit || 'contain'}" controls autoplay muted playsinline>
                             <source src="${event.video.url}" type="video/mp4">
                             Your browser does not support the video tag.
                            </video>`
@@ -2316,4 +2316,5 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
+
 
