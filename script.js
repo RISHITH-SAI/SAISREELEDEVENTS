@@ -12,6 +12,17 @@ let currentGalleryIndex = 0;    // Index of the currently displayed image in the
 let currentEventForGallery = null; // Stores the full event object for the active gallery
 let currentEventChatListener = null; // Stores the Firestore real-time listener for chat messages (for unsubscription)
 
+// Your web app's Firebase configuration - DIRECTLY EMBEDDED
+const firebaseConfig = {
+    apiKey: "AIzaSyA_dPQ8JCGVi-aX7uS5NdnHpFKurT2jJC8",
+    authDomain: "saisreeledevents.firebaseapp.com",
+    projectId: "saisreeledevents",
+    storageBucket: "saisreeledevents.firebasestorage.app",
+    messagingSenderId: "212507109156",
+    appId: "1:212507109156:web:5d7e230ba3d7945532f5b1",
+    measurementId: "G-Y947LKLXGF"
+};
+
 // --- Default Application Settings (Persisted to Firestore by Admin) ---
 // These default values are used until settings are loaded from Firestore or updated by an admin.
 let appSettings = {
@@ -489,74 +500,42 @@ async function uploadFile(file, path) {
  */
 async function initializeFirebase() {
     try {
-        // Check if Firebase configuration is provided (from Canvas environment or default placeholder)
-        if (window.firebaseConfig) {
-            app = window.initializeApp(window.firebaseConfig);
-            auth = window.getAuth(app);
-            db = window.getFirestore(app);
-            storage = window.getStorage(app);
-            console.log("Firebase services initialized.");
+        // Initialize Firebase app with your provided config
+        app = window.initializeApp(firebaseConfig);
+        auth = window.getAuth(app);
+        db = window.getFirestore(app);
+        storage = window.getStorage(app);
+        console.log("Firebase services initialized with provided config.");
 
-            // Set up a listener for Firebase authentication state changes
-            window.onAuthStateChanged(auth, async (user) => {
-                // This listener is primarily for internal tracking of admin status.
-                // Public pages do not show sign-in/out buttons.
-                if (user) {
-                    currentUserId = user.uid; // Set current user ID
-                    console.log("Auth state changed: User is logged in. UID:", user.uid);
-                } else {
-                    currentUserId = 'anonymous'; // User is signed out or anonymous
-                    console.log("Auth state changed: User is anonymous or logged out.");
-                }
-
-                // Execute initial app setup only once after authentication state is determined
-                if (!appInitialized) {
-                    // Try to sign in with a custom token (provided by Canvas) if available and no user is logged in
-                    if (window.initialAuthToken && !user) {
-                        try {
-                            await window.signInWithCustomToken(auth, window.initialAuthToken);
-                            console.log("Signed in with initial custom token.");
-                        } catch (error) {
-                            console.error("Error signing in with custom token:", error);
-                            // Fallback to anonymous sign-in if custom token fails
-                            await window.signInAnonymously(auth);
-                            console.log("Signed in anonymously after custom token failure.");
-                        }
-                    } else if (!user) { // If no custom token and no user, sign in anonymously
-                        await window.signInAnonymously(auth);
-                        console.log("Signed in anonymously.");
-                    }
-                    appInitialized = true; // Mark app as initialized
-                    await loadAppData();   // Load core application data from Firestore
-                    handleRouting();       // Render the initial page based on URL hash
-                }
-            });
-
-             // Ensure an initial auth state is attempted if none is present
-             // This block handles the very first load if onAuthStateChanged hasn't fired yet
-            if (!auth.currentUser) {
-                console.log("No current user, attempting initial sign-in.");
-                if (window.initialAuthToken) {
-                     try {
-                        await window.signInWithCustomToken(auth, window.initialAuthToken);
-                        console.log("Initial sign-in with custom token attempted.");
-                     } catch (error) {
-                        console.error("Initial custom token sign-in failed, falling back to anonymous:", error);
-                        await window.signInAnonymously(auth);
-                     }
-                } else {
-                    await window.signInAnonymously(auth);
-                    console.log("Initial anonymous sign-in attempted.");
-                }
+        // Set up a listener for Firebase authentication state changes
+        window.onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid; // Set current user ID
+                console.log("Auth state changed: User is logged in. UID:", user.uid);
+            } else {
+                currentUserId = 'anonymous'; // User is signed out or anonymous
+                console.log("Auth state changed: User is anonymous or logged out.");
             }
 
-        } else {
-            // Fallback for environments without Firebase config (e.g., local development without setup)
-            console.error("Firebase config not found. Running in demo mode without real-time persistence.");
-            appInitialized = true; // Mark initialized to allow app to render
-            loadMockData();        // Load static mock data
-            handleRouting();       // Render the initial page
+            // Execute initial app setup only once after authentication state is determined
+            if (!appInitialized) {
+                // If no user is logged in, sign in anonymously for public access
+                if (!user) {
+                    await window.signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
+                }
+                appInitialized = true; // Mark app as initialized
+                await loadAppData();   // Load core application data from Firestore
+                handleRouting();       // Render the initial page based on URL hash
+            }
+        });
+
+        // Ensure an initial anonymous sign-in is attempted if no auth state is present
+        if (!auth.currentUser) {
+            console.log("No current user, attempting initial anonymous sign-in.");
+            await window.signInAnonymously(auth);
         }
+
     } catch (error) {
         console.error("Failed to initialize Firebase:", error);
         await showMessageBox("Failed to initialize Firebase. Some features may not work. Check console for details.");
@@ -660,8 +639,8 @@ async function saveEvent(event) {
             await showMessageBox("Event added successfully!");
         }
     } catch (error) {
-        console.error("Error saving event:", error);
-        await showMessageBox("Error saving event. Please check console for details.");
+            console.error("Error saving event:", error);
+            await showMessageBox("Error saving event. Please check console for details.");
     }
 }
 
@@ -1214,7 +1193,7 @@ function setupChatListener(eventId) {
             // Display sender name, timestamp, and message content
             // Convert Firestore Timestamp to readable time string
             const timestamp = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString() : new Date().toLocaleTimeString();
-            
+
             let messageContent = `
                 <div>
                     <span class="font-semibold text-blue-300">${msg.senderName || 'Anonymous'}</span>
@@ -1222,7 +1201,7 @@ function setupChatListener(eventId) {
                     <span class="text-white break-words">${msg.message}</span>
                 </div>
             `;
-            
+
             // Add delete button if the current user sent the message and is not anonymous
             if (auth.currentUser && !auth.currentUser.isAnonymous && auth.currentUser.uid === msg.userId) {
                 messageContent += `
@@ -1827,7 +1806,7 @@ function renderEventsManagement() {
             <h4 id="event-form-title" class="text-2xl font-bold mb-4 text-white">Add New Event</h4>
             <form id="event-form" class="space-y-4">
                 <input type="hidden" id="event-id-input"> <!-- Hidden input to store event ID for updates -->
-                
+
                 <!-- Basic Event Details -->
                 <div>
                     <label for="event-title-input" class="block text-gray-300 text-lg font-medium mb-2">Title</label>
@@ -1895,7 +1874,7 @@ function renderEventsManagement() {
                 <button type="button" id="add-gallery-image-button" class="px-5 py-2 button-style text-white bg-teal-600 hover:bg-teal-700 mt-4">
                     <i data-lucide="image-plus" class="w-5 h-5 mr-2"></i> Add Gallery Image
                 </button>
-                
+
                 <!-- Optional Auto-Poster Creator -->
                 <div class="flex items-center mt-4">
                     <input type="checkbox" id="auto-poster-checkbox" class="mr-2 h-5 w-5 text-purple-600 rounded focus:ring-purple-500">
