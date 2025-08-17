@@ -529,17 +529,21 @@ async function initializeFirebase() {
                 currentUserId = user.uid; // Set current user ID
                 console.log("Auth state changed: User is logged in. UID:", user.uid);
 
-                // --- NEW ADMIN REDIRECTION LOGIC ---
-                // Only attempt to redirect to admin panel if app is initialized
-                // and the user is now authenticated as an admin.
-                if (appInitialized && isAdmin()) {
-                    console.log("User is admin, redirecting to admin panel.");
-                    // Only redirect if not already on the admin page to prevent infinite loops
-                    if (window.location.hash !== '#admin') {
-                        window.location.hash = '#admin';
+                // Add a small delay for auth.currentUser.email to fully populate
+                // This is crucial for the isAdmin() check to work reliably right after sign-in
+                setTimeout(async () => {
+                    // --- ADMIN REDIRECTION LOGIC ---
+                    // Only attempt to redirect to admin panel if app is initialized
+                    // and the user is now authenticated as an admin.
+                    if (appInitialized && isAdmin()) {
+                        console.log("User is admin, redirecting to admin panel.");
+                        // Only redirect if not already on the admin page to prevent infinite loops
+                        if (window.location.hash !== '#admin') {
+                            window.location.hash = '#admin';
+                        }
                     }
-                }
-                // --- END NEW ADMIN REDIRECTION LOGIC ---
+                    // --- END ADMIN REDIRECTION LOGIC ---
+                }, 100); // 100ms delay to allow auth.currentUser to update
 
             } else {
                 currentUserId = 'anonymous'; // User is signed out or anonymous
