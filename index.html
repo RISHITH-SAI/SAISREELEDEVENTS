@@ -158,7 +158,7 @@
     <script type="module">
         // Import necessary Firebase modules from their CDN URLs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc, getDocs, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
@@ -170,6 +170,7 @@
         window.signInWithCustomToken = signInWithCustomToken;
         window.onAuthStateChanged = onAuthStateChanged;
         window.signOut = signOut;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword; // <-- ADD THIS LINE
         window.getFirestore = getFirestore;
         window.doc = doc;
         window.getDoc = getDoc;
@@ -199,3 +200,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
