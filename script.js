@@ -432,17 +432,17 @@ function updateGlobalElements() {
 /**
  * @function isAdmin
  * @description Checks if the currently authenticated user is the administrator.
+ * @param {object} [user=null] The Firebase user object to check. If null, uses auth.currentUser.
  * @returns {boolean} True if the current user is the admin, false otherwise.
  */
-function isAdmin() {
-    // The primary check is if the authenticated user's email matches the adminUsername from settings.
-    // appSettings.adminUsername is now guaranteed to hold the initial hardcoded value.
-    if (!auth || !auth.currentUser || !auth.currentUser.email) {
-        console.log("isAdmin check: auth.currentUser or email is null/undefined.");
+function isAdmin(user = null) {
+    const userToCheck = user || auth.currentUser; // Use provided user or current authenticated user
+    if (!userToCheck || !userToCheck.email) {
+        console.log("isAdmin check: User object or email is null/undefined.");
         return false;
     }
     // Ensure both values are trimmed and lowercased for a robust comparison
-    const currentUserEmail = auth.currentUser.email.trim().toLowerCase();
+    const currentUserEmail = userToCheck.email.trim().toLowerCase();
     const adminEmailSetting = appSettings.adminUsername.trim().toLowerCase();
     console.log(`isAdmin check: Current User Email: '${currentUserEmail}', Admin Setting: '${adminEmailSetting}'`);
     return currentUserEmail === adminEmailSetting;
@@ -541,13 +541,14 @@ async function initializeFirebase() {
                     // --- ADMIN REDIRECTION LOGIC ---
                     // Only attempt to redirect to admin panel if app is initialized
                     // and the user is now authenticated as an admin.
-                    if (appInitialized && isAdmin()) {
+                    // Pass the 'user' object directly to isAdmin for immediate accurate check
+                    if (appInitialized && isAdmin(user)) {
                         console.log("User is admin, redirecting to admin panel.");
                         // Only redirect if not already on the admin page to prevent infinite loops
                         if (window.location.hash !== '#admin') {
                             window.location.hash = '#admin';
                         }
-                    } else if (appInitialized && window.location.hash === '#admin' && !isAdmin()) {
+                    } else if (appInitialized && window.location.hash === '#admin' && !isAdmin(user)) {
                         // If user is on admin page but not admin, redirect them out
                         showMessageBox("Access Denied: You must be logged in as an administrator to access this panel.").then(() => {
                             window.location.hash = ''; // Redirect to home page
