@@ -698,7 +698,7 @@ function loadMockData() {
             gallery: [
                 { id: generateUniqueId(), url: 'https://placehold.co/800x600/6d28d9/ffffff?text=Keynote+Speaker', caption: 'Keynote Speaker' },
                 { id: generateUniqueId(), url: 'https://placehold.co/800x600/8b5cf6/ffffff?text=Networking+Session', caption: 'Networking Session' },
-                { id: generateUniqueId(), url: 'https://placeUniqueId(), url: 'https://placehold.co/800x600/a78bfa/ffffff?text=Innovation+Showcase' }
+                { id: generateUniqueId(), url: 'https://placehold.co/800x600/a78bfa/ffffff?text=Innovation+Showcase' }
             ],
             autoPosterUrl: '', // Will be generated if admin accepts
             bg: '#1e3a8a', // Specific background for this event
@@ -1071,15 +1071,18 @@ async function handleShare(event) {
         } catch (error) {
             console.error('Error sharing via Web Share API:', error);
             // If sharing is cancelled by user or fails for other reasons, still provide fallback
-            navigator.clipboard.writeText(shareUrl)
-                .then(() => showMessageBox('Failed to share via system dialog. Event link copied to clipboard!'))
-                .catch(err => console.error('Could not copy text to clipboard:', err));
+            document.execCommand('copy'); // Use deprecated execCommand for broader iFrame compatibility
+            showMessageBox('Failed to share via system dialog. Event link copied to clipboard!');
         }
     } else {
         // Fallback for browsers that do not support Web Share API (desktop)
-        navigator.clipboard.writeText(shareUrl)
-            .then(() => showMessageBox('Event link copied to clipboard!'))
-            .catch(err => console.error('Could not copy text to clipboard: ', err));
+        const dummyElement = document.createElement('textarea');
+        document.body.appendChild(dummyElement);
+        dummyElement.value = shareUrl;
+        dummyElement.select();
+        document.execCommand('copy'); // Use deprecated execCommand for broader iFrame compatibility
+        document.body.removeChild(dummyElement);
+        showMessageBox('Event link copied to clipboard!');
     }
 }
 
