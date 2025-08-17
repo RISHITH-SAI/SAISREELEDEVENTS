@@ -23,42 +23,46 @@ const firebaseConfig = {
     measurementId: "G-Y947LKLXGF"
 };
 
-// --- Default Application Settings (Persisted to Firestore by Admin) ---
-// These default values are used until settings are loaded from Firestore or updated by an admin.
-let appSettings = {
+// --- Define Initial Default Application Settings (Immutable) ---
+// These are the base settings, including the admin credentials, that will always be available.
+const INITIAL_APP_SETTINGS = {
     companyName: "LiveStream Hub",
     companyLogoUrl: "https://placehold.co/50x50/8b5cf6/ffffff?text=LOGO",
     miniLogoType: "icon",       // Can be "icon" or "image"
     miniLogoIcon: "star",       // Lucide icon name if miniLogoType is "icon"
     miniLogoImageUrl: "",       // URL if miniLogoType is "image"
-    contactEmail: "raju.saisree.rk@gmail.com", // Updated default email
-    contactPhone: "9849135853",     // Updated default phone
-    copyrightText: "© 2025 LiveStream Hub. All rights reserved.", // Updated copyright year
-    instagramUrl: "https://instagram.com/yourcompany", // Default Instagram URL
-    youtubeUrl: "https://youtube.com/yourcompany",     // Default YouTube URL
-    products: [ // Default list of products
+    contactEmail: "raju.saisree.rk@gmail.com",
+    contactPhone: "9849135853",
+    copyrightText: "© 2025 LiveStream Hub. All rights reserved.",
+    instagramUrl: "https://instagram.com/yourcompany",
+    youtubeUrl: "https://youtube.com/yourcompany",
+    products: [
         { id: 'prod1', title: 'Premium Live Access', description: 'Unlock exclusive events and ad-free viewing with a premium pass.' },
         { id: 'prod2', title: 'Event Replays Pass', description: 'Access all past event recordings on demand.' }
     ],
-    founder: { // Default founder information (optional)
+    founder: {
         name: 'Dr. Tech Visionary',
         title: 'Founder & CEO',
         bio: 'A pioneer in digital event streaming, dedicated to connecting communities worldwide through innovative technology.'
     },
-    teamMembers: [ // Default team members (optional)
-        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/4a5568/ffffff?text=AS' },
+    teamMembers: [
+        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/7c3aed/ffffff?text=AS' },
         { id: 'team2', name: 'Bob Johnson', role: 'Lead Engineer', photoUrl: 'https://placehold.co/100x100/9333ea/ffffff?text=BJ' }
     ],
-    theme: { // Default theme settings
-        globalBackground: "#0a0a0a",      // Main page background color
-        buttonColor: "#4f46e5",           // Default button background color (Indigo-600)
-        buttonHoverColor: "#4338ca",      // Default button hover color (Indigo-700)
-        buttonTextColor: "#ffffff",       // Default button text color
-        depthStyle: "neumorphic",         // "neumorphic" | "glass" | "flat" (currently only affects visual hints in CSS)
+    theme: {
+        globalBackground: "#0a0a0a",
+        buttonColor: "#4f46e5",
+        buttonHoverColor: "#4338ca",
+        buttonTextColor: "#ffffff",
+        depthStyle: "neumorphic",
     },
-    adminUsername: "raju.saisree.rk@gmail.com", // Admin login username
-    adminPassword: "9849135853" // Admin login password (!!! In a real app, hash and store securely server-side !!!)
+    adminUsername: "raju.saisree.rk@gmail.com", // Admin login username (IMPORTANT: Stored locally, not in Firestore)
+    adminPassword: "9849135853" // Admin login password (IMPORTANT: Stored locally, not in Firestore)
 };
+
+// appSettings will be a mutable copy, initialized with the default settings.
+// Its admin credentials will be protected from Firestore overwrites.
+let appSettings = { ...INITIAL_APP_SETTINGS };
 
 let eventsData = []; // Array to hold all event objects fetched from Firestore
 
@@ -257,13 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // --- IMPORTANT: This section now attempts REAL Firebase Authentication ---
             try {
                 // Sign in with email and password using Firebase Auth
-                // This will create a real Firebase user session if credentials are valid
                 const userCredential = await window.signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 console.log("Firebase Auth sign-in successful:", user.uid, user.email);
 
-                // Now, check if the authenticated user is the designated admin
-                if (user.email === appSettings.adminUsername) {
+                // Now, check if the authenticated user's email matches the locally stored adminUsername
+                if (user.email === appSettings.adminUsername) { // This check now uses the preserved appSettings.adminUsername
                     await showMessageBox("Admin login successful!").then(() => {
                         hideModal(adminLoginModal); // Hide the login modal
                         window.location.hash = '#admin'; // Redirect to the admin panel
@@ -433,6 +436,7 @@ function updateGlobalElements() {
  */
 function isAdmin() {
     // The primary check is if the authenticated user's email matches the adminUsername from settings.
+    // appSettings.adminUsername is now guaranteed to hold the initial hardcoded value.
     return auth && auth.currentUser && auth.currentUser.email === appSettings.adminUsername;
 }
 
@@ -567,23 +571,16 @@ async function loadAppData() {
         return;
     }
 
-    // Preserve the initial admin credentials from the default appSettings
-    const initialAdminUsername = appSettings.adminUsername;
-    const initialAdminPassword = appSettings.adminPassword; // Also preserve password if needed elsewhere
-
     // Set up real-time listener for application settings (company details, theme, etc.)
     const settingsDocRef = window.doc(db, "settings", "company");
     window.onSnapshot(settingsDocRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
-            // Merge existing default settings with loaded data, overwriting defaults where data exists.
-            // Crucially, explicitly re-apply adminUsername and adminPassword to ensure they are not lost
-            // when the data from Firestore (which doesn't contain them) overwrites appSettings.
+            // Merge data from Firestore, but ensure original admin credentials are preserved.
+            // We start with a fresh copy of INITIAL_APP_SETTINGS to ensure adminUsername/Password are always present,
+            // then overlay with data from Firestore.
             appSettings = {
-                ...appSettings, // Start with the full default appSettings including admin credentials
-                ...docSnapshot.data(), // Overlay with data from Firestore
-                // Explicitly re-apply admin credentials to ensure they are not lost during merge
-                adminUsername: initialAdminUsername,
-                adminPassword: initialAdminPassword
+                ...INITIAL_APP_SETTINGS, // Use the immutable base settings
+                ...docSnapshot.data()    // Overlay with loaded data (which won't contain admin credentials)
             };
             console.log("App settings loaded:", appSettings);
         } else {
@@ -624,9 +621,9 @@ async function saveAppSettings() {
     }
     try {
         // Create a copy of appSettings and remove sensitive admin credentials before saving to public document
-        const settingsToSave = { ...appSettings };
-        delete settingsToSave.adminUsername;
-        delete settingsToSave.adminPassword;
+        const settingsToSave = { ...appSettings }; // Use the current appSettings
+        delete settingsToSave.adminUsername; // Remove before saving to Firestore
+        delete settingsToSave.adminPassword; // Remove before saving to Firestore
 
         // Use `setDoc` with `doc(db, "settings", "company")` to create or overwrite the single settings document
         await window.setDoc(window.doc(db, "settings", "company"), settingsToSave);
