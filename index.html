@@ -4,84 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiveStream Hub - Events</title>
+    <!-- Tailwind CSS CDN for utility classes, ensuring modern styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for a clean, professional typography across the site -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN for modern, crisp vector icons used throughout the UI -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS for theme and specific overrides -->
     <link rel="stylesheet" href="style.css">
     <style>
+        /* Apply Inter font family globally for consistent typography */
         body {
             font-family: 'Inter', sans-serif;
-        }
-        /* Make iframe responsive */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-            background: #000;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-        .video-container iframe {
-            position: absolute;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
         }
     </style>
 </head>
 <body class="bg-gray-950 text-gray-100 flex flex-col min-h-screen">
 
+    <!-- Header Section: Displays company logo and name, centered as requested -->
     <header class="bg-gray-900 shadow-lg p-4 flex flex-col sm:flex-row items-center justify-center z-10 relative">
         <div class="flex items-center space-x-3">
+            <!-- Company Logo & Name, dynamically updated by JavaScript from Firestore settings -->
             <img id="company-logo" src="https://placehold.co/50x50/8b5cf6/ffffff?text=LOGO" alt="Company Logo" class="w-12 h-12 rounded-full shadow-md">
             <h1 id="company-name" class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">LiveStream Hub</h1>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main id="app-container" class="flex-1 p-6 flex items-center justify-center">
-        <div class="video-container">
-            <iframe 
-                src="https://www.youtube.com/embed/Ac5uLcBilIw" 
-                title="YouTube video player" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
+    <!-- Main Content Area: This is the dynamic container where different pages (Home, Event Detail, Admin Panel) will be loaded by JavaScript -->
+    <main id="app-container" class="flex-1 p-4 overflow-hidden">
+        <!-- Initial loading message, replaced once JavaScript loads content -->
+        <div class="flex items-center justify-center min-h-[calc(100vh-180px)]">
+            <p class="text-gray-400 text-xl">Loading application...</p>
         </div>
     </main>
 
+    <!-- Footer Section: Consistent across all pages, displaying contact info, company details button, and copyrights -->
     <footer class="bg-gray-900 shadow-lg p-6 mt-auto text-center relative z-10 flex flex-col md:flex-row items-center justify-between flex-wrap">
         <div class="flex flex-col md:flex-row items-center md:space-x-4 mb-4 md:mb-0">
-            <p id="footer-contact" class="text-gray-400 text-sm mb-2 md:mb-0">
-                Contact: <span id="footer-email">raju.saisree.rk@gmail.com</span> | <span id="footer-phone">9849135853</span>
-            </p>
+            <!-- Company Contact Details, dynamically updated by JavaScript -->
+            <p id="footer-contact" class="text-gray-400 text-sm mb-2 md:mb-0">Contact: <span id="footer-email">raju.saisree.rk@gmail.com</span> | <span id="footer-phone">9849135853</span></p>
+            <!-- Small Brand Logo (Mini-Logo), dynamically updated based on admin settings -->
             <div id="mini-logo-container" class="w-6 h-6 rounded-full flex items-center justify-center text-xl shadow-md border border-gray-700 overflow-hidden">
                 <i id="mini-logo-icon" data-lucide="star" class="text-yellow-400 w-4 h-4"></i>
                 <img id="mini-logo-img" src="" alt="Mini Logo" class="hidden w-full h-full object-cover">
             </div>
         </div>
         <div class="flex flex-col md:flex-row items-center md:space-x-4">
+            <!-- Company Details Button, opens a modal with more company information -->
             <button id="company-details-button" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 button-style mb-4 md:mb-0">
                 Company Details
             </button>
+            <!-- Copyright Text, dynamically updated from admin settings -->
             <p id="copyright-text" class="text-gray-500 text-sm">&copy; 2025 Your Company. All rights reserved.</p>
         </div>
+
+        <!-- Admin Access Button: Subtle and positioned in a corner, only visible on the main public page via JS -->
         <button id="admin-access-button" class="absolute bottom-2 right-2 px-3 py-1 bg-gray-700 text-gray-400 text-xs rounded-md opacity-50 hover:opacity-100 transition-opacity duration-300 z-20 button-style">
             Admin
         </button>
     </footer>
 
-    <!-- Firebase SDKs -->
+    <!-- Modals (Initially Hidden, controlled by JavaScript for dynamic display) -->
+
+    <!-- Global Message Box: A custom alert/confirm dialog for consistent UI and better control -->
+    <div id="message-box-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <p id="message-box-text" class="text-lg font-medium text-gray-100 mb-4"></p>
+            <div class="flex justify-end space-x-3">
+                <button id="message-box-confirm" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg button-style">OK</button>
+                <button id="message-box-cancel" class="px-5 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg button-style hidden">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Details Modal: Displays detailed company information, products, social links, and team members -->
+    <div id="company-details-modal" class="modal-backdrop hidden">
+        <div class="modal-content custom-scrollbar">
+            <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Company Details</h2>
+
+            <section class="mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-white">Our Products</h3>
+                <ul id="modal-products-list" class="list-disc list-inside text-gray-300 space-y-2">
+                    <!-- Products will be loaded here by JS -->
+                </ul>
+            </section>
+
+            <section class="mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-white">Connect With Us</h3>
+                <div id="modal-social-links" class="flex space-x-4 justify-center flex-wrap gap-y-2">
+                    <!-- Social media buttons will be loaded here by JS -->
+                </div>
+            </section>
+
+            <section id="modal-founder-team-section" class="mb-6">
+                <h3 class="text-2xl font-semibold mb-3 text-white">Our Team</h3>
+                <div id="modal-founder-bio" class="mb-4">
+                    <!-- Founder bio will be loaded here by JS -->
+                </div>
+                <div id="modal-team-members" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Team members will be loaded here by JS -->
+                </div>
+            </section>
+
+            <button id="company-details-close-button" class="mt-6 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 button-style">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Fullscreen Image Gallery Modal: Displays event gallery images in a full-screen view without navigation buttons -->
+    <div id="gallery-modal" class="modal-backdrop hidden flex items-center justify-center p-4">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <img id="gallery-image-display" src="" alt="Full Screen Image" class="max-w-full max-h-full object-contain rounded-lg shadow-xl">
+            <!-- Removed gallery navigation buttons as requested -->
+            <!-- Close button for the gallery -->
+            <button id="gallery-close-button" class="absolute top-4 right-4 bg-red-600 bg-opacity-70 text-white p-2 rounded-full hover:bg-opacity-90 transition-all duration-300 button-style">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal: Secure entry point for administrators -->
+    <div id="admin-login-modal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <h2 class="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Admin Login</h2>
+            <form id="admin-login-form" class="space-y-4">
+                <div>
+                    <label for="admin-email" class="block text-gray-300 text-lg font-medium mb-2">Email/Username</label>
+                    <input type="email" id="admin-email" name="admin-email" class="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter your email" required>
+                </div>
+                <div>
+                    <label for="admin-password" class="block text-gray-300 text-lg font-medium mb-2">Password</label>
+                    <input type="password" id="admin-password" name="admin-password" class="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 button-style">
+                    <i data-lucide="key" class="w-5 h-5 mr-2"></i>Enter Admin Panel
+                </button>
+            </form>
+            <button id="admin-login-close-button" class="mt-4 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 button-style">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs: Imported as modules for efficient loading and scope management -->
     <script type="module">
+        // Import necessary Firebase modules from their CDN URLs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signOut, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, addDoc, getDocs, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
+        // Expose Firebase modules to the global window object so script.js can access them
+        // This is a common pattern for integrating module scripts with traditional scripts
         window.initializeApp = initializeApp;
         window.getAuth = getAuth;
         window.signInAnonymously = signInAnonymously;
@@ -99,17 +174,21 @@
         window.query = query;
         window.addDoc = addDoc;
         window.getDocs = getDocs;
-        window.orderBy = orderBy;
-        window.limit = limit;
-        window.writeBatch = writeBatch;
+        window.orderBy = orderBy; // For chat message ordering
+        window.limit = limit;     // For chat message limit
+        window.writeBatch = writeBatch; // For bulk chat message deletion
+
         window.getStorage = getStorage;
         window.ref = ref;
         window.uploadBytes = uploadBytes;
         window.getDownloadURL = getDownloadURL;
 
+        // Firebase config and initial auth token are provided by the Canvas environment.
+        // If running outside Canvas, these would need to be manually set or loaded.
         window.firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
         window.initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
     </script>
+    <!-- Your main JavaScript logic -->
     <script src="script.js"></script>
 </body>
 </html>
