@@ -955,9 +955,10 @@ function renderEventPage(slug) {
                 <div class="relative w-full overflow-hidden bg-black rounded-lg mb-8" style="width: ${videoWidth}; height: ${videoHeight}; max-width: 100%; margin: 0 auto;">
                     ${event.video.type === 'youtube'
                         // YouTube embed iframe with autoplay muted, playsinline for mobile
-                        ? `<iframe class="absolute top-0 left-0 w-full h-full" src="${event.video.url}?autoplay=1&mute=1&rel=0&playsinline=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
+                        // Ensure the URL is always the /embed/ format
+                        ? `<iframe width="${videoWidth}" height="${videoHeight}" class="absolute top-0 left-0 w-full h-full" src="${event.video.url.replace('watch?v=', 'embed/') || 'https://www.youtube.com/embed/dQw4w9WgXcQ'}?autoplay=1&mute=1&rel=0&playsinline=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`
                         // Generic video tag for other video types (MP4, HLS, etc.)
-                        : `<video class="absolute top-0 left-0 w-full h-full object-${event.video.fit || 'contain'}" controls autoplay muted playsinline>
+                        : `<video width="${videoWidth}" height="${videoHeight}" class="absolute top-0 left-0 w-full h-full object-${event.video.fit || 'contain'}" controls autoplay muted playsinline>
                             <source src="${event.video.url}" type="video/mp4">
                             Your browser does not support the video tag.
                            </video>`
