@@ -46,7 +46,7 @@ const INITIAL_APP_SETTINGS = {
         bio: 'A pioneer in digital event streaming, dedicated to connecting communities worldwide through innovative technology.'
     },
     teamMembers: [
-        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/7c3aed/ffffff?text=AS' },
+        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/4a5568/ffffff?text=AS' },
         { id: 'team2', name: 'Bob Johnson', role: 'Lead Engineer', photoUrl: 'https://placehold.co/100x100/9333ea/ffffff?text=BJ' }
     ],
     theme: {
@@ -265,8 +265,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const user = userCredential.user;
                 console.log("Firebase Auth sign-in successful:", user.uid, user.email);
 
-                // Now, check if the authenticated user's email matches the locally stored adminUsername
-                if (user.email === appSettings.adminUsername) { // This check now uses the preserved appSettings.adminUsername
+                // Perform robust comparison for admin authorization
+                const authenticatedEmail = user.email.trim().toLowerCase();
+                const expectedAdminEmail = appSettings.adminUsername.trim().toLowerCase();
+
+                console.log(`Admin check: Authenticated Email: '${authenticatedEmail}', Expected Admin Email: '${expectedAdminEmail}'`);
+
+                if (authenticatedEmail === expectedAdminEmail) {
                     await showMessageBox("Admin login successful!").then(() => {
                         hideModal(adminLoginModal); // Hide the login modal
                         window.location.hash = '#admin'; // Redirect to the admin panel
@@ -437,7 +442,14 @@ function updateGlobalElements() {
 function isAdmin() {
     // The primary check is if the authenticated user's email matches the adminUsername from settings.
     // appSettings.adminUsername is now guaranteed to hold the initial hardcoded value.
-    return auth && auth.currentUser && auth.currentUser.email === appSettings.adminUsername;
+    if (!auth || !auth.currentUser || !auth.currentUser.email) {
+        return false;
+    }
+    // Ensure both values are trimmed and lowercased for a robust comparison
+    const currentUserEmail = auth.currentUser.email.trim().toLowerCase();
+    const adminEmailSetting = appSettings.adminUsername.trim().toLowerCase();
+    console.log(`isAdmin check: Current User Email: '${currentUserEmail}', Admin Setting: '${adminEmailSetting}'`);
+    return currentUserEmail === adminEmailSetting;
 }
 
 /**
@@ -1356,6 +1368,7 @@ function renderAdminPanel() {
     if (!appContainer) { console.error("App container not found."); return; }
 
     // Restrict access: If current user is not admin, show message and redirect to home
+    console.log("Rendering Admin Panel. Calling isAdmin()..."); // Debug log
     if (!isAdmin()) {
         showMessageBox("Access Denied: You must be logged in as an administrator to access this panel.").then(() => {
             window.location.hash = ''; // Redirect to home page
