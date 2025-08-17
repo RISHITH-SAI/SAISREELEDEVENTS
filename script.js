@@ -438,12 +438,17 @@ function isAdmin() {
 
 /**
  * @function showModal
- * @description Adds the 'active' class to a modal element to make it visible.
+ * @description Adds the 'active' class and removes the 'hidden' class to a modal element to make it visible.
  * @param {HTMLElement} modalElement The modal DOM element to show.
  */
 function showModal(modalElement) {
     if (modalElement) {
-        modalElement.classList.add('active');
+        modalElement.classList.remove('hidden'); // IMPORTANT: Remove 'hidden' first
+        // Adding a slight delay before adding 'active' ensures the 'hidden' removal
+        // is processed, allowing CSS transitions to work properly from 'display: block'
+        setTimeout(() => {
+            modalElement.classList.add('active');
+        }, 10); // A small delay (e.g., 10ms) is often sufficient
     } else {
         console.warn("Attempted to show a null modal element.");
     }
@@ -451,12 +456,17 @@ function showModal(modalElement) {
 
 /**
  * @function hideModal
- * @description Removes the 'active' class from a modal element to hide it.
+ * @description Removes the 'active' class and adds the 'hidden' class from a modal element to hide it.
  * @param {HTMLElement} modalElement The modal DOM element to hide.
  */
 function hideModal(modalElement) {
     if (modalElement) {
-        modalElement.classList.remove('active');
+        modalElement.classList.remove('active'); // Remove 'active' for transition effect
+        // After the transition completes, add 'hidden' back
+        // The transition duration for modal-backdrop is 0.3s (300ms)
+        setTimeout(() => {
+            modalElement.classList.add('hidden'); // Add 'hidden' after transition for full concealment
+        }, 300); // Match this timeout to your CSS transition duration (0.3s = 300ms)
     } else {
         console.warn("Attempted to hide a null modal element.");
     }
@@ -688,7 +698,7 @@ function loadMockData() {
             gallery: [
                 { id: generateUniqueId(), url: 'https://placehold.co/800x600/6d28d9/ffffff?text=Keynote+Speaker', caption: 'Keynote Speaker' },
                 { id: generateUniqueId(), url: 'https://placehold.co/800x600/8b5cf6/ffffff?text=Networking+Session', caption: 'Networking Session' },
-                { id: generateUniqueId(), url: 'https://placehold.co/800x600/a78bfa/ffffff?text=Innovation+Showcase', caption: 'Innovation Showcase' }
+                { id: generateUniqueId(), url: 'https://placeUniqueId(), url: 'https://placehold.co/800x600/a78bfa/ffffff?text=Innovation+Showcase' }
             ],
             autoPosterUrl: '', // Will be generated if admin accepts
             bg: '#1e3a8a', // Specific background for this event
@@ -2475,3 +2485,4 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
+
