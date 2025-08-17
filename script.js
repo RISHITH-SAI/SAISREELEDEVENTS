@@ -265,22 +265,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const user = userCredential.user;
                 console.log("Firebase Auth sign-in successful:", user.uid, user.email);
 
-                // Perform robust comparison for admin authorization
-                const authenticatedEmail = user.email.trim().toLowerCase();
-                const expectedAdminEmail = appSettings.adminUsername.trim().toLowerCase();
-
-                console.log(`Admin check: Authenticated Email: '${authenticatedEmail}', Expected Admin Email: '${expectedAdminEmail}'`);
-
-                if (authenticatedEmail === expectedAdminEmail) {
-                    await showMessageBox("Admin login successful!").then(() => {
-                        hideModal(adminLoginModal); // Hide the login modal
-                        window.location.hash = '#admin'; // Redirect to the admin panel
-                    });
-                } else {
-                    // Logged in successfully, but not the designated admin email
-                    await window.signOut(auth); // Sign them out
-                    await showMessageBox("Login successful, but this account is not authorized as admin.");
-                }
+                // Successfully signed in. Now hide the modal.
+                // The redirection to admin panel will be handled by onAuthStateChanged listener
+                // once the auth.currentUser object is fully updated.
+                hideModal(adminLoginModal);
+                await showMessageBox("Login successful. Checking admin privileges..."); // Inform user
             } catch (error) {
                 console.error("Firebase Auth sign-in failed:", error.code, error.message);
                 let errorMessage = "Admin login failed. Please try again.";
@@ -443,6 +432,7 @@ function isAdmin() {
     // The primary check is if the authenticated user's email matches the adminUsername from settings.
     // appSettings.adminUsername is now guaranteed to hold the initial hardcoded value.
     if (!auth || !auth.currentUser || !auth.currentUser.email) {
+        console.log("isAdmin check: auth.currentUser or email is null/undefined.");
         return false;
     }
     // Ensure both values are trimmed and lowercased for a robust comparison
@@ -538,6 +528,19 @@ async function initializeFirebase() {
             if (user) {
                 currentUserId = user.uid; // Set current user ID
                 console.log("Auth state changed: User is logged in. UID:", user.uid);
+
+                // --- NEW ADMIN REDIRECTION LOGIC ---
+                // Only attempt to redirect to admin panel if app is initialized
+                // and the user is now authenticated as an admin.
+                if (appInitialized && isAdmin()) {
+                    console.log("User is admin, redirecting to admin panel.");
+                    // Only redirect if not already on the admin page to prevent infinite loops
+                    if (window.location.hash !== '#admin') {
+                        window.location.hash = '#admin';
+                    }
+                }
+                // --- END NEW ADMIN REDIRECTION LOGIC ---
+
             } else {
                 currentUserId = 'anonymous'; // User is signed out or anonymous
                 console.log("Auth state changed: User is anonymous or logged out.");
@@ -2019,7 +2022,7 @@ function renderEventsManagement() {
         generatePosterButton.addEventListener('click', async () => {
             // --- Auto-Poster Generation (Simulated) ---
             // A *real* auto-poster generator would require server-side image processing
-            // (e.g., a Firebase Cloud Function or external API) to render text onto an image template.
+            // (e.g., a Firebase Cloud Function or external API) to render text onto an image template).
             // For this client-side demo, we'll simulate by adding a placeholder image.
             const titleInput = document.getElementById('event-title-input');
             const dateTimeInput = document.getElementById('event-datetime-input');
