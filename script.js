@@ -2230,6 +2230,7 @@ function showEventEditForm(event = null) {
  * @description Creates and returns a DOM element for a single gallery image input field
  * (URL, file upload, caption, and remove button).
  * @param {object} image The image object to pre-populate the fields.
+ * @param {number} index The index of the product in the array.
  * @returns {HTMLElement} The created gallery image input div.
  */
 function createAdminGalleryImageField(image = {}) {
