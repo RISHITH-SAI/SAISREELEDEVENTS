@@ -3,38 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LiveStream Hub</title>
+  <title>SAI SREE EVENTS</title>
 
-  <!-- Inter font -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Tailwind (CDN for fast start) -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
+  <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="min-h-screen flex flex-col bg-[#0a0a0a]">
+
   <!-- Header -->
   <header class="w-full border-b border-white/10 bg-[#0b0b0b]">
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <img id="company-logo" src="https://placehold.co/50x50/8b5cf6/ffffff?text=LOGO" alt="Logo" class="w-10 h-10 rounded-lg" />
-        <h1 id="company-name" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">LiveStream Hub</h1>
-        <span id="mini-logo-container" class="ml-2 hidden md:inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/5">
-          <i id="mini-logo-icon" data-lucide="star" class="w-5 h-5 text-white"></i>
-          <img id="mini-logo-img" class="hidden w-5 h-5" alt="mini" />
-        </span>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button id="company-details-button" class="button-style px-4 py-2">Company</button>
-        <button id="admin-access-button" class="button-style px-4 py-2">Admin</button>
+        <div class="flex flex-col">
+          <h1 id="company-name" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">SAI SREE EVENTS</h1>
+          <button id="company-details-button" class="button-style mt-2 w-fit px-4 py-2">Company</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Main App Container -->
+  <!-- Main Container -->
   <main id="app-container" class="flex-1"></main>
 
   <!-- Footer -->
@@ -42,62 +37,30 @@
     <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-gray-300">
       <div id="footer-contact" class="flex items-center gap-3">
         <i data-lucide="mail" class="w-4 h-4"></i>
-        <span id="footer-email">contact@example.com</span>
+        <span id="footer-email">contact@saisreeevents.com</span>
         <span class="mx-2 opacity-40">•</span>
         <i data-lucide="phone" class="w-4 h-4"></i>
-        <span id="footer-phone">0000000000</span>
+        <span id="footer-phone">+91 9876543210</span>
       </div>
-      <div id="copyright-text" class="text-gray-400">© 2025 LiveStream Hub. All rights reserved.</div>
+      <div class="flex items-center gap-2">
+        <button id="admin-access-button" class="button-style-minimal px-4 py-2">Admin</button>
+      </div>
+      <div id="copyright-text" class="text-gray-400">© 2025 SAI SREE EVENTS. All rights reserved.</div>
     </div>
   </footer>
 
-  <!-- Message Box Modal (custom alert/confirm) -->
-  <div id="message-box-modal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <p id="message-box-text" class="text-gray-200 mb-6"></p>
-      <div class="flex items-center justify-end gap-3">
-        <button id="message-box-cancel" class="button-style bg-gray-700">Cancel</button>
-        <button id="message-box-confirm" class="button-style">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Company Details Modal -->
+  <!-- Modals -->
   <div id="company-details-modal" class="modal-backdrop hidden">
-    <div class="modal-content custom-scrollbar">
+    <div class="modal-content">
       <div class="flex items-start justify-between mb-4">
         <h3 class="text-xl font-bold text-white">About Company</h3>
         <button id="company-details-close-button" class="button-style-minimal"><i data-lucide="x" class="w-6 h-6"></i></button>
       </div>
-
-      <h4 class="text-lg font-semibold text-white mb-2">Products</h4>
-      <ul id="modal-products-list" class="space-y-2 mb-6"></ul>
-
-      <h4 class="text-lg font-semibold text-white mb-2">Social</h4>
+      <div id="modal-products-list" class="space-y-2 mb-6"></div>
       <div id="modal-social-links" class="flex flex-wrap gap-3 mb-6"></div>
-
-      <section id="modal-founder-team-section" class="hidden">
-        <h4 class="text-lg font-semibold text-white mb-2">Founder & Team</h4>
-        <div id="modal-founder-bio" class="mb-4"></div>
-        <div id="modal-team-members" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-      </section>
     </div>
   </div>
 
-  <!-- Gallery Modal -->
-  <div id="gallery-modal" class="modal-backdrop hidden">
-    <div class="modal-content max-w-5xl w-full">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-white">Gallery</h3>
-        <button id="gallery-close-button" class="button-style"><i data-lucide="x"></i></button>
-      </div>
-      <div class="w-full">
-        <img id="gallery-image-display" src="" alt="Gallery" class="w-full h-auto rounded-lg" />
-      </div>
-    </div>
-  </div>
-
-  <!-- Admin Login Modal -->
   <div id="admin-login-modal" class="modal-backdrop hidden">
     <div class="modal-content">
       <div class="flex items-center justify-between mb-4">
@@ -118,33 +81,23 @@
     </div>
   </div>
 
-  <!-- Admin Panel View (rendered by JS when #admin) -->
-  <!-- Scripts: Firebase v10 modular CDN -->
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Firebase Modules -->
   <script type="module">
-    // Expose Firebase modules to window for non-module script.js to use
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInAnonymously, signInWithEmailAndPassword, updateEmail, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot, addDoc, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
     window.initializeApp = initializeApp;
     window.getAuth = getAuth;
-    window.onAuthStateChanged = onAuthStateChanged;
-    window.signInAnonymously = signInAnonymously;
     window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-    window.updateEmail = updateEmail;
-    window.updatePassword = updatePassword;
     window.signOut = signOut;
-
     window.getFirestore = getFirestore;
-    window.doc = doc;
-    window.setDoc = setDoc;
-    window.getDoc = getDoc;
-    window.onSnapshot = onSnapshot;
-    window.addDoc = addDoc;
     window.collection = collection;
-    window.deleteDoc = deleteDoc;
-
+    window.addDoc = addDoc;
     window.getStorage = getStorage;
     window.ref = ref;
     window.uploadBytes = uploadBytes;
