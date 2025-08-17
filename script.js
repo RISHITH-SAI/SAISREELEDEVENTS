@@ -46,7 +46,7 @@ let appSettings = {
         bio: 'A pioneer in digital event streaming, dedicated to connecting communities worldwide through innovative technology.'
     },
     teamMembers: [ // Default team members (optional)
-        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/7c3aed/ffffff?text=AS' },
+        { id: 'team1', name: 'Alice Smith', role: 'Head of Content', photoUrl: 'https://placehold.co/100x100/4a5568/ffffff?text=AS' },
         { id: 'team2', name: 'Bob Johnson', role: 'Lead Engineer', photoUrl: 'https://placehold.co/100x100/9333ea/ffffff?text=BJ' }
     ],
     theme: { // Default theme settings
@@ -567,12 +567,24 @@ async function loadAppData() {
         return;
     }
 
+    // Preserve the initial admin credentials from the default appSettings
+    const initialAdminUsername = appSettings.adminUsername;
+    const initialAdminPassword = appSettings.adminPassword; // Also preserve password if needed elsewhere
+
     // Set up real-time listener for application settings (company details, theme, etc.)
     const settingsDocRef = window.doc(db, "settings", "company");
     window.onSnapshot(settingsDocRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
-            // Merge existing default settings with loaded data, overwriting defaults where data exists
-            appSettings = { ...appSettings, ...docSnapshot.data() };
+            // Merge existing default settings with loaded data, overwriting defaults where data exists.
+            // Crucially, explicitly re-apply adminUsername and adminPassword to ensure they are not lost
+            // when the data from Firestore (which doesn't contain them) overwrites appSettings.
+            appSettings = {
+                ...appSettings, // Start with the full default appSettings including admin credentials
+                ...docSnapshot.data(), // Overlay with data from Firestore
+                // Explicitly re-apply admin credentials to ensure they are not lost during merge
+                adminUsername: initialAdminUsername,
+                adminPassword: initialAdminPassword
+            };
             console.log("App settings loaded:", appSettings);
         } else {
             console.log("No app settings found in Firestore. Saving default settings.");
@@ -2488,4 +2500,3 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
-
