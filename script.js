@@ -936,6 +936,8 @@ function renderEventPage(slug) {
 
     // Populate the main content area with event details
     appContainer.innerHTML = `
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+`;
         <div class="max-w-7xl mx-auto py-8 px-4">
             <!-- Back Button to return to the events list -->
             <button onclick="window.location.hash='';" class="flex items-center text-gray-400 hover:text-purple-400 transition-colors duration-200 mb-6 button-style-minimal">
@@ -2316,6 +2318,7 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
+
 
 
 
