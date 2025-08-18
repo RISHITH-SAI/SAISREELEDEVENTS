@@ -25,14 +25,14 @@ const firebaseConfig = {
 // --- Define Initial Default Application Settings (Immutable) ---
 // These are the base settings, including the admin credentials, that will always be available.
 const INITIAL_APP_SETTINGS = {
-    companyName: "LiveStream Hub",
+    companyName: "SAI SREE LED EVENTS",
     companyLogoUrl: "https://placehold.co/50x50/8b5cf6/ffffff?text=LOGO",
     miniLogoType: "icon",       // Can be "icon" or "image"
     miniLogoIcon: "star",       // Lucide icon name if miniLogoType is "icon"
     miniLogoImageUrl: "",       // URL if miniLogoType is "image"
     contactEmail: "raju.saisree.rk@gmail.com",
     contactPhone: "9849135853",
-    copyrightText: "© 2025 LiveStream Hub. All rights reserved.",
+    copyrightText: "© 2025 SAI SREE LED EVENTS. All rights reserved.",
     instagramUrl: "https://instagram.com/yourcompany",
     youtubeUrl: "https://youtube.com/yourcompany",
     products: [
@@ -2316,5 +2316,6 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
+
 
 
