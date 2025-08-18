@@ -934,14 +934,12 @@ function renderEventPage(slug) {
     const videoWidth = event.video?.width || '80%';
     const videoHeight = event.video?.height || 'auto'; // 'auto' for responsive height if width is 100%
 
-  // Populate the main content area with event details
-appContainer.innerHTML = `
-    <div class="max-w-7xl mx-auto py-8 px-4">
-        <button onclick="window.location.hash='';" class="flex items-center text-gray-400 hover:text-purple-400 transition-colors duration-200 mb-6 button-style-minimal">
-            <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Back to Events
-        </button>
-    </div>
-`;
+    // Populate the main content area with event details
+    appContainer.innerHTML = `
+        <div class="max-w-7xl mx-auto py-8 px-4">
+            <button onclick="window.location.hash='';" class="flex items-center text-gray-400 hover:text-purple-400 transition-colors duration-200 mb-6 button-style-minimal">
+                <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Back to Events
+            </button>
 
             <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8 event-card">
                 <h2 class="event-highlight-text text-center mb-4">${event.title}</h2>
@@ -2283,4 +2281,3 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
-
