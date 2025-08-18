@@ -936,24 +936,18 @@ function renderEventPage(slug) {
 
     // Populate the main content area with event details
     appContainer.innerHTML = `
-<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
-`;
         <div class="max-w-7xl mx-auto py-8 px-4">
-            <!-- Back Button to return to the events list -->
             <button onclick="window.location.hash='';" class="flex items-center text-gray-400 hover:text-purple-400 transition-colors duration-200 mb-6 button-style-minimal">
                 <i data-lucide="arrow-left" class="w-5 h-5 mr-2"></i> Back to Events
             </button>
 
             <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8 event-card">
-                <!-- Event Name Highlight -->
                 <h2 class="event-highlight-text text-center mb-4">${event.title}</h2>
-                <!-- Event Date, Time, and Venue -->
                 <p class="text-gray-400 text-center mb-6 text-lg">
                     <i data-lucide="calendar" class="inline-block w-5 h-5 mr-2 align-middle"></i> ${new Date(event.dateTime).toLocaleString()}<br>
                     <i data-lucide="map-pin" class="inline-block w-5 h-5 mr-2 align-middle"></i> ${event.venue}
                 </p>
 
-                <!-- Video Player Section -->
                 <div class="relative w-full overflow-hidden bg-black rounded-lg mb-8" style="width: ${videoWidth}; height: ${videoHeight}; max-width: 100%; margin: 0 auto;">
                     ${event.video.type === 'youtube'
                         // YouTube embed iframe with autoplay muted, playsinline for mobile
@@ -967,14 +961,12 @@ function renderEventPage(slug) {
                     }
                 </div>
 
-                <!-- Interactions: Share Button -->
                 <div class="flex items-center justify-end mb-8 flex-wrap gap-4">
                     <button id="share-button" class="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-md button-style">
                         <i data-lucide="share-2" class="w-5 h-5 mr-2"></i> Share
                     </button>
                 </div>
 
-                <!-- Client and Description (Optional sections, displayed if content exists) -->
                 ${event.client || event.description ? `
                     <div class="mb-8 p-4 bg-gray-850 rounded-lg shadow-inner">
                         ${event.client ? `<p class="text-gray-400 text-sm mb-2"><span class="font-semibold text-white">Client/Organizer:</span> ${event.client}</p>` : ''}
@@ -982,7 +974,6 @@ function renderEventPage(slug) {
                     </div>
                 ` : ''}
 
-                <!-- Optional Poster Section -->
                 ${event.posterUrl ? `
                     <h3 class="text-3xl font-bold mb-6 text-white text-center flex items-center justify-center">
                         <i data-lucide="megaphone" class="w-7 h-7 mr-3 text-orange-400"></i> Event Poster
@@ -992,7 +983,6 @@ function renderEventPage(slug) {
                     </div>
                 ` : ''}
 
-                <!-- Gallery Section: Displays event images in a grid, clickable for fullscreen view -->
                 ${event.gallery && event.gallery.length > 0 ? `
                     <h3 class="text-3xl font-bold mb-6 text-white text-center flex items-center justify-center">
                         <i data-lucide="image" class="w-7 h-7 mr-3 text-cyan-400"></i> Gallery
@@ -1237,7 +1227,6 @@ function renderAdminPanel() {
         <div class="max-w-7xl mx-auto py-8 px-4">
             <h2 class="text-4xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-500">Admin Dashboard</h2>
 
-            <!-- Admin Navigation Bar -->
             <nav class="bg-gray-800 p-4 rounded-lg shadow-md mb-8 flex flex-wrap justify-center gap-4">
                 <button id="admin-nav-company" class="px-6 py-3 button-style text-white bg-blue-600 hover:bg-blue-700">
                     <i data-lucide="building-2" class="w-5 h-5 mr-2"></i> Company Settings
@@ -1253,9 +1242,7 @@ function renderAdminPanel() {
                 </button>
             </nav>
 
-            <!-- Admin Content Area: Dynamic content for selected admin section -->
             <div id="admin-content" class="bg-gray-800 rounded-lg shadow-lg p-6">
-                <!-- Content will be loaded dynamically here by section-specific render functions -->
                 <p class="text-center text-gray-400">Select a section from the navigation above.</p>
             </div>
         </div>
@@ -1296,13 +1283,11 @@ function renderCompanySettings() {
             <i data-lucide="building-2" class="w-7 h-7 mr-3 text-blue-400"></i> Company Settings
         </h3>
         <form id="company-settings-form" class="space-y-6">
-            <!-- Company Name -->
             <div>
                 <label for="company-name-input" class="block text-gray-300 text-lg font-medium mb-2">Company Name</label>
                 <input type="text" id="company-name-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.companyName}" required>
             </div>
 
-            <!-- Company Logo URL/Upload -->
             <div>
                 <label for="company-logo-url-input" class="block text-gray-300 text-lg font-medium mb-2">Company Logo URL</label>
                 <input type="url" id="company-logo-url-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.companyLogoUrl}" placeholder="https://example.com/logo.png">
@@ -1310,7 +1295,6 @@ function renderCompanySettings() {
                 <input type="file" id="company-logo-file-input" accept="image/*" class="w-full p-3 rounded-lg bg-gray-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 cursor-pointer">
             </div>
 
-            <!-- Mini Logo Type (Icon or Image URL/Upload) -->
             <div class="flex items-center space-x-4">
                 <label class="block text-gray-300 text-lg font-medium">Mini Logo Type:</label>
                 <input type="radio" id="mini-logo-type-icon" name="mini-logo-type" value="icon" class="mr-2 h-4 w-4 text-purple-600 focus:ring-purple-500" ${appSettings.miniLogoType === 'icon' ? 'checked' : ''}>
@@ -1318,13 +1302,11 @@ function renderCompanySettings() {
                 <input type="radio" id="mini-logo-type-image" name="mini-logo-type" value="image" class="ml-4 mr-2 h-4 w-4 text-purple-600 focus:ring-purple-500" ${appSettings.miniLogoType === 'image' ? 'checked' : ''}>
                 <label for="mini-logo-type-image" class="text-gray-300">Image URL</label>
             </div>
-            <!-- Mini Logo Icon Settings (visible if 'icon' type selected) -->
             <div id="mini-logo-icon-settings" class="${appSettings.miniLogoType === 'icon' ? '' : 'hidden'}">
                 <label for="mini-logo-icon-select" class="block text-gray-300 text-lg font-medium mb-2">Choose Icon (Lucide Icon Name)</label>
                 <input type="text" id="mini-logo-icon-select" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.miniLogoIcon}" placeholder="e.g., star, circle, diamond, heart">
                 <p class="text-gray-400 text-sm mt-1">Find icon names at <a href="https://lucide.dev/icons/" target="_blank" class="text-blue-400 hover:underline">lucide.dev/icons</a></p>
             </div>
-            <!-- Mini Logo Image Settings (visible if 'image' type selected) -->
             <div id="mini-logo-image-settings" class="${appSettings.miniLogoType === 'image' ? '' : 'hidden'}">
                 <label for="mini-logo-image-url-input" class="block text-gray-300 text-lg font-medium mb-2">Mini Logo Image URL</label>
                 <input type="url" id="mini-logo-image-url-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.miniLogoImageUrl}" placeholder="https://example.com/mini_logo.png">
@@ -1332,7 +1314,6 @@ function renderCompanySettings() {
                 <input type="file" id="mini-logo-file-input" accept="image/*" class="w-full p-3 rounded-lg bg-gray-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 cursor-pointer">
             </div>
 
-            <!-- Contact Information -->
             <div>
                 <label for="contact-email-input" class="block text-gray-300 text-lg font-medium mb-2">Contact Email</label>
                 <input type="email" id="contact-email-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.contactEmail}" required>
@@ -1346,7 +1327,6 @@ function renderCompanySettings() {
                 <input type="text" id="copyright-text-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.copyrightText}" required>
             </div>
 
-            <!-- Social Media Links -->
             <div>
                 <label for="instagram-url-input" class="block text-gray-300 text-lg font-medium mb-2">Instagram URL</label>
                 <input type="url" id="instagram-url-input" class="w-full p-3 rounded-lg bg-gray-700 text-white" value="${appSettings.instagramUrl}">
@@ -1358,8 +1338,7 @@ function renderCompanySettings() {
 
             <h4 class="text-2xl font-semibold mt-8 mb-4 text-white">Products</h4>
             <div id="products-list-admin" class="space-y-4">
-                <!-- Product input fields will be dynamically loaded here -->
-            </div>
+                </div>
             <button type="button" id="add-product-button" class="px-5 py-2 button-style text-white bg-teal-600 hover:bg-teal-700 mt-4">
                 <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Add Product
             </button>
@@ -1375,8 +1354,7 @@ function renderCompanySettings() {
             </div>
             <h5 class="text-xl font-medium mb-3 text-white">Team Members</h5>
             <div id="team-members-list-admin" class="space-y-4">
-                <!-- Team member input fields will be dynamically loaded here -->
-            </div>
+                </div>
             <button type="button" id="add-team-member-button" class="px-5 py-2 button-style text-white bg-teal-600 hover:bg-teal-700 mt-4">
                 <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Add Team Member
             </button>
@@ -1688,17 +1666,12 @@ function renderEventsManagement() {
         </button>
 
         <div id="events-list-admin" class="space-y-4">
-            <!-- List of events will be rendered here -->
-        </div>
+            </div>
 
-        <!-- Event Edit/Add Form (initially hidden, shown when adding or editing an event) -->
         <div id="event-edit-form-container" class="hidden mt-8 p-6 bg-gray-700 rounded-lg shadow-inner custom-scrollbar">
             <h4 id="event-form-title" class="text-2xl font-bold mb-4 text-white">Add New Event</h4>
             <form id="event-form" class="space-y-4">
-                <input type="hidden" id="event-id-input"> <!-- Hidden input to store event ID for updates -->
-
-                <!-- Basic Event Details -->
-                <div>
+                <input type="hidden" id="event-id-input"> <div>
                     <label for="event-title-input" class="block text-gray-300 text-lg font-medium mb-2">Title</label>
                     <input type="text" id="event-title-input" class="w-full p-3 rounded-lg bg-gray-600 text-white" required>
                 </div>
@@ -1724,7 +1697,6 @@ function renderEventsManagement() {
                     <textarea id="event-description-input" class="w-full p-3 rounded-lg bg-gray-600 text-white h-32"></textarea>
                 </div>
 
-                <!-- Video Settings -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Video Settings</h5>
                 <div class="space-y-3">
                     <div>
@@ -1755,7 +1727,6 @@ function renderEventsManagement() {
                     </div>
                 </div>
 
-                <!-- Thumbnail Image Settings -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Thumbnail Image</h5>
                 <div>
                     <label for="thumbnail-url-input" class="block text-gray-300 text-lg font-medium mb-2">Thumbnail URL</label>
@@ -1764,7 +1735,6 @@ function renderEventsManagement() {
                     <input type="file" id="thumbnail-file-input" accept="image/*" class="w-full p-3 rounded-lg bg-gray-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 cursor-pointer">
                 </div>
 
-                <!-- Optional Poster Section -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Event Poster (Optional)</h5>
                 <div>
                     <label for="poster-url-input" class="block text-gray-300 text-lg font-medium mb-2">Poster URL</label>
@@ -1773,17 +1743,14 @@ function renderEventsManagement() {
                     <input type="file" id="poster-file-input" accept="image/*" class="w-full p-3 rounded-lg bg-gray-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 cursor-pointer">
                 </div>
 
-                <!-- Gallery Images Settings -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Gallery Images</h5>
                 <div id="gallery-images-admin" class="space-y-4 p-4 bg-gray-800 rounded-lg shadow-inner">
-                    <!-- Gallery image input fields will be dynamically added here -->
-                </div>
+                    </div>
                 <button type="button" id="add-gallery-image-button" class="px-5 py-2 button-style text-white bg-teal-600 hover:bg-teal-700 mt-4">
                     <i data-lucide="image-plus" class="w-5 h-5 mr-2"></i> Add Gallery Image
                 </button>
 
 
-                <!-- Event Appearance Settings -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Event Appearance (Overrides Global Theme)</h5>
                 <div>
                     <label for="event-bg-color-input" class="block text-gray-300 text-lg font-medium mb-2">Event Background Color (Optional)</label>
@@ -1796,7 +1763,6 @@ function renderEventsManagement() {
                     <input type="file" id="event-bg-file-input" accept="image/*" class="w-full p-3 rounded-lg bg-gray-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-500 file:text-white hover:file:bg-purple-600 cursor-pointer">
                 </div>
 
-                <!-- Status Settings -->
                 <h5 class="text-xl font-medium mt-6 mb-3 text-white">Status</h5>
                 <div>
                     <label for="event-status-select" class="block text-gray-300 text-lg font-medium mb-2">Status</label>
@@ -1811,7 +1777,6 @@ function renderEventsManagement() {
                     <label for="event-featured-checkbox" class="text-gray-300">Mark as Featured</label>
                 </div>
 
-                <!-- Action Buttons for Event Form -->
                 <div class="flex space-x-4 mt-8">
                     <button type="submit" class="flex-1 px-6 py-3 button-style text-white bg-indigo-600 hover:bg-indigo-700">
                         Save Event
@@ -2245,13 +2210,11 @@ function renderThemeSettings() {
                 <input type="color" id="button-text-color-input" class="w-full h-12 rounded-lg cursor-pointer" value="${appSettings.theme.buttonTextColor}">
             </div>
 
-            <!-- 3D Style Options -->
             <div class="flex items-center space-x-4">
                 <label class="block text-gray-300 text-lg font-medium">Depth Style (Visual Hint):</label>
                 <input type="radio" id="style-flat" name="depth-style" value="flat" class="mr-2 h-4 w-4 text-purple-600 focus:ring-purple-500" ${appSettings.theme.depthStyle === 'flat' ? 'checked' : ''}>
                 <label for="style-flat" class="text-gray-300">Flat</label>
-                <!-- Removed neumorphic and glass options as requested for 2D focus -->
-            </div>
+                </div>
              <p class="text-gray-400 text-sm mt-1">Note: This setting acts as a visual hint for administrators, actual styling is 2D.</p>
 
             <button type="submit" class="w-full px-6 py-3 button-style text-white bg-indigo-600 hover:bg-indigo-700 mt-8">
@@ -2318,7 +2281,3 @@ async function handleSaveThemeSettings(e) {
     await saveAppSettings(); // Save updated settings to Firestore
     await showMessageBox("Theme settings updated successfully!");
 }
-
-
-
-
